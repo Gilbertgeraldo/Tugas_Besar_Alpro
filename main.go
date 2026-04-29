@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/pem"
 	"fmt"
 	"math"
 )
@@ -259,6 +258,18 @@ func cetakAmortisasi(p Pinjaman) {
 	garis1()
 }
 
+func inputSkema() string {
+	fmt.Println("Skema Bunga : ")
+	fmt.Println("	1.FLAT		-Bunga kamu tetap nih dari pokok awal.")
+	fmt.Println("	2.VARIABEL	-Bunga anuitas,menurun tiap bulab")
+	fmt.Println("	Pilig(1/2)")
+	var s string
+	fmt.Scan(&s)
+	if s == "1" {
+		return "flat"
+	}
+	return "VARIABEL"
+}
 //CRUD data peminjam(Create,Read,Update,delete)
 func tambahPeminjam() {
 	ClearScreen()
@@ -366,9 +377,50 @@ func ubahPeminjam() {
 		fmt.Print("	Bunga pertahun (%) baru : ")
 		fmt.Scan(&p.Bunga)
 		hitungDanSet()
+	case "5":
+		fmt.Print("	Status Pembayaran baru : ")
+		fmt.Scan(&p )
 	}
 }
 
+func hapusPeminjam() {
+	ClearScreen()
+	garis1()
+	fmt.Println("HAPUS DATA PEMINJAM")
+	garis1()
+
+	if countPeminjam == 0 {
+		fmt.Println("Belum ada data peminjam!")
+		return
+	}
+	allTable()
+
+	fmt.Print("\n Masukan no Peminjam yang ingin dihapus : ")
+	var no int
+	fmt.Scan(&no)
+
+	if no < 1 || no > countPeminjam {
+		fmt.Println("Nomor tidak valid!")
+		return
+	}
+	idx := no -1
+	nama := dataPeminjam[idx].Nama
+
+	fmt.Printf( " Apakah anda yakin untuk menghapus \"%s\"? : ",nama)
+	var konfirmasi string
+	fmt.Scan(&konfirmasi)
+
+	if konfirmasi != "Y" && konfirmasi != "y" {
+		fmt.Println("Penghapusan dibatalkan.")
+		return
+	}
+
+	for i := idx; i < countPeminjam - 1;i++ {
+		dataPeminjam[i] = dataPeminjam[i + 1]
+	}
+	countPeminjam--
+	fmt.Printf(" Peminjam \"%s\" berhasil dihapus!\n",nama)
+}
 
 
 
