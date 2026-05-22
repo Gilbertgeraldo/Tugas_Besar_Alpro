@@ -385,9 +385,114 @@ func InsertionSortNama(arr *[1000]Pinjaman,n int) {
 
 //SELECTION
 func SelectionSortPinjaman(arr *[1000]Pinjaman,n int) {
-	for i := 1;i < n;i++ {
-		
+	for i := 1;i < n-1;i++ {
+		mIdx := i
+		for j := i + 1;j < n;j++ {
+			if arr[j].JumlahPinjaman < arr[mIdx].JumlahPinjaman {
+				mIdx = j
+			}
+		}
+		arr[i],arr[mIdx] = arr[mIdx],arr[i]
 	}
+}
+
+func SelectionSortTenor(arr *[1000]Pinjaman,n int) {
+	for i := 1;i < n - 1;i++ {
+		minIdx := i
+		for j := i + 1;j < n; j++ {
+			if arr[j].Tenor < arr[minIdx].Tenor {
+				minIdx = j
+			}
+		}
+		arr[i],arr[minIdx] = arr[minIdx],arr[i]
+	}
+}
+
+func MenuSorting() {
+	ClearScreen()
+	garis1()
+	fmt.Print(" URUTKAN DATA PEMINJAM")
+	garis1()
+
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		enter()
+		return
+	}
+
+	fmt.Println(" Urutkan berdasarkan : ")
+	fmt.Println("	1.Jumlah Pinjaman(Selection Sort)")
+	fmt.Println("	2.Tenor (Selection Sort)")
+	fmt.Println("	3.Jumlah Pinjaman(Insertion Sort)")
+	fmt.Println("	4.Tenor (Selection Sort)")
+
+	var pil string
+	fmt.Scan(&pil)
+
+	switch pil {
+	case "1":
+		SelectionSortPinjaman(&dataPeminjam,countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Jumlah Pinjaaman (Selection Sort)")
+	case "2":
+		SelectionSortTenor(&dataPeminjam,countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Tenor (Selection Sort)")
+	case "3":
+		InsertionSortPinjaman(&dataPeminjam,countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Jumlah Pinjaman(Insertion Sort)")
+	case "4":
+		InsertionSortTenor(&dataPeminjam,countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Tenor (Insertion Sort)")
+	default:
+		fmt.Println("Error!!,Pilihan tidak valid.")
+		enter()
+		return
+	}
+	allTable()
+	enter()
+}
+
+func Laporan() {
+	ClearScreen()
+	garis1()
+	fmt.Println(" LAPORAN SISTEM PEMINJAMAN")
+	garis1()
+
+	if countPeminjam == 0 {
+		fmt.Println("Belum ada data peminjam")
+		enter()
+		return
+	}
+	var totalPokok,totalBayar,totalBunga float64
+	var cMen,CAk,cLun,CMcet int
+
+	for i := 0;i < countPeminjam;i++{
+		p := dataPeminjam[i]
+		totalPokok += p.JumlahPinjaman
+		totalBayar += p.TotalBayar
+		totalBunga += p.TotalBunga
+
+		switch p.Status {
+		case "MENUNGGU":
+			cMen++
+		case "AKTIF":
+			CAk++
+		case "LUNAS":
+			cLun++
+		case "MACET":
+			CMcet++
+		}
+	}
+	fmt.Printf("	Total peminjam				: %d orang\n",countPeminjam)
+	fmt.Printf("	Total pokok pinjaman		: Rp %.2f\n",totalPokok)
+	fmt.Printf("	Total Bunga					: Rp %.2f\n",totalBunga)
+	fmt.Printf("	Total Nilai Bayar			: Rp %.2f\n",totalBayar)
+	garis2()	
+	fmt.Printf("	Total peminjam				: %d orang\n",countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n",countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n",countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n",countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n",countPeminjam)
+
 }
 func main() {
 	fmt.Println("Program Sistem Pinjaman")
