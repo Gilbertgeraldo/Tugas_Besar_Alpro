@@ -84,140 +84,7 @@ func enter() {
 	var d string
 	fmt.Scan(&d)
 }
-
-
-// UNTUK MENDAFTARKAN ADMIN DENGAN MAKSIMAL ADMIN ADALAH 3
-// func regisAdmin(data *[3]admin, i int) {
-// 	fmt.Println()
-// 	fmt.Printf("=%-10s Buat Akun =%-10s", " ", " ")
-// 	fmt.Print("Nama : ")	
-// 	fmt.Scan(&data[i].Username)
-// 	fmt.Print("Password : ")
-// 	fmt.Scan(&data[i].Password)
-// 	fmt.Printf("=====================================")
-// 	fmt.Print("YEAYYY!DATA KAMU BERHASIL DIBUAT!!")
-// }
-
-// CEK APAKAH ADMIN ADA ? 
-// func cekDataAdmin(usn string, pw string) bool {
-// 	for _,v := range dataAdmin {
-// 		if usn == v.Username && pw == v.Password {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func cekDataNasabah(usn string,pw string) bool {
-// 	for _,v := range dataPeminjam {
-// 		if usn == v.Nama && pw == v.Password {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func loginAdmin() bool {
-// 	var username, password string
-
-// 	fmt.Print("Username : ")
-// 	fmt.Scan(&username)
-// 	fmt.Print("Password : ")
-// 	fmt.Scan(&password)
-
-// 	for _, v := range dataAdmin {
-// 		if username == v.Username && password == v.Password {
-// 			fmt.Print("Password dan username anda benar!")
-// 			Admin(v.Username)
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func loginPeminjam() bool {
-// 	var usn,pwd string
-
-// 	fmt.Print("Username : ")
-// 	fmt.Scan(&usn)
-// 	fmt.Print("Password : ")
-// 	fmt.Scan(&pwd)
-
-// 	for _,v := range akunNasabah {
-// 		if v.username == usn && v.password == pwd {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func Register() {
-// 	ClearScreen()
-// 	var pilihan string
-// 	garis1()
-// 	fmt.Println("--------- DAFTAR AKUN BARU ---------")
-// 	fmt.Println("1.Daftar Sebagai admin")
-// 	fmt.Println("2.Register sebagai peminjam")
-// 	garis1()
-// 	fmt.Scan(&pilihan)
-
-// 	var usn string
-// 	fmt.Print("Harap masukan username anda : ")
-// 	fmt.Scan(&usn)
-
-// 	switch pilihan {
-// 	case "1":
-// 		found := false
-// 		for _, v := range dataAdmin {
-// 			if v.Username == usn {
-// 				found = true
-// 				break
-// 			}
-// 		}
-
-// 		if found {
-// 			fmt.Printf("\nUsername : %s sudah terdaftar!!", usn)
-// 			loginAdmin()
-// 		} else {
-// 			var pw string
-// 			fmt.Print("Harap masukan password anda : ")
-// 			fmt.Scan(&pw)
-// 			dataAdmin[counterAdmin] = admin{Username: usn, Password: pw}
-// 			counterAdmin++
-// 			fmt.Println("registrasi admin berhasil")
-// 		}
-
-// 	case "2":
-// 		found := false
-// 		for _, v := range dataPeminjam {
-// 			if v.Nama == usn {
-// 				found = true
-// 				break
-// 			}
-// 		}
-// 		if found {
-// 			fmt.Printf("\nUsername : %s sudah terdaftar!!", usn)
-// 			loginPeminjam()
-// 		} else {
-// 			nasabahBaru := Pinjaman{
-// 				Nama:   usn,
-// 				Status: "nggu",
-// 				Tenor: 0,
-// 				Bunga: 0,
-// 				sudahBayar: 0,
-// 				BayaranPerbulan: 0,
-// 				sisaPinjam: 0,
-// 				JumlahPinjaman: 0,
-// 			}
-// 			dataPeminjam[counterPeminjam] = nasabahBaru
-// 			counterPeminjam++
-// 			fmt.Println("Registrasi peminjaman berhasil")
-// 		}
-// 	}
-// }
-
 // INI RUMUS UNTUK KALKULASI BUNGA
-
 //Bunga variabel anuitas
 // C = p * r(1 + r)^n / ((1 + r)^n - 1)
 //didapat dari https://www.bfi.co.id/id/blog/bunga-anuitas
@@ -249,6 +116,17 @@ func bungaFlat(pokok,bunga float64,tenor int) (bayaran,totalBunga,totalBayar flo
 	return
 }
 
+func hitungDanSet(p *Pinjaman) {
+	var bayaran,totalBunga,totalBayar float64
+	if p.SchemaBunga == "FLAT" {
+		bayaran,totalBunga,totalBayar = bungaFlat(p.JumlahPinjaman,p.Bunga,p.Tenor)
+	}else {
+		bayaran,totalBunga,totalBayar = HitungAnuitas(p.JumlahPinjaman,p.Bunga,p.Tenor)
+	}
+	p.BayaranPerbulan = bayaran
+	p.TotalBunga = totalBunga
+	p.TotalBayar = totalBayar
+}
 func cetakAmortisasi(p Pinjaman) {
 	garis1()
 	fmt.Println("Tabel Amortisasi(Jadwal cicilan Anda)")
@@ -371,16 +249,57 @@ func ubahPeminjam() {
 	case "3":
 		fmt.Print("	Tenor baru (bulan): ")
 		fmt.Scan(&p.Tenor)
-		hitungDanSet()
+		hitungDanSet(p)
 	case "4":
 		p.SchemaBunga = inputSkema()
 		fmt.Print("	Bunga pertahun (%) baru : ")
 		fmt.Scan(&p.Bunga)
-		hitungDanSet()
+		if p.Bunga < 0 {
+			fmt.Println(" Bunga tidak boleh negatif.")
+		}
+		hitungDanSet(p)
 	case "5":
 		fmt.Print("	Status Pembayaran baru : ")
-		fmt.Scan(&p )
+		fmt.Println("Pilih status baru : ")
+		fmt.Println("	1.MENUNGGU")
+		fmt.Println("	2.AKTIF")
+		fmt.Println("	3.LUNAS")
+		fmt.Println("	4.MACET")
+		fmt.Println("Pilihan :")
+		var s string
+		fmt.Scan(&s)
+		switch s {
+		case "1":
+			p.Status = "MENUNGGU"
+		case "2":
+			p.Status = "AKTIF"
+		case "3":
+			p.Status = "LUNAS"
+		case "4":
+			p.Status = "MACET"
+		default:
+			enter()
+			return
+		}
+	case "6":
+		fmt.Printf("Kamu udah bayar berapa bulan nih : (max : %d)",p.Tenor)
+		fmt.Scan(&p.sudahBayar)
+		if p.sudahBayar < 0 || p.sudahBayar > p.Tenor {
+			fmt.Printf("Kamu gabisa input nilai yang negatif ya untuk tenor...")
+			enter()
+			return
+		}
+		if p.sudahBayar == p.Tenor {
+			p.Status = "LUNAS"
+		}
+	default:
+		fmt.Println("Pilihan yang kamu masukan tidak valid nih,masukan pilihan yang benar ya..")
+		enter()
+		return
 	}
+	fmt.Printf("\n Data peminjam \"%s\" Berhasil diubah!\n",p.Nama)
+	DetailPeminjaman(*p,idx)
+	enter()
 }
 
 func hapusPeminjam() {
@@ -422,8 +341,54 @@ func hapusPeminjam() {
 	fmt.Printf(" Peminjam \"%s\" berhasil dihapus!\n",nama)
 }
 
+//PENCARIAN : Sequential & Binary Searc  
 
+//ALGORITMA SORTING :
 
+//INSERTION
+
+func InsertionSortPinjaman(arr *[1000]Pinjaman,n int) {
+	for i := 0;i < n;i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j].JumlahPinjaman > key.JumlahPinjaman {
+			arr[j + 1] = arr[j]
+			j--
+		}
+		arr[j + 1] = key
+	}
+}
+
+func InsertionSortTenor(arr *[1000]Pinjaman,n int) {
+	for i := 1;i < n;i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j].Tenor > key.Tenor {
+			arr[j + 1] = arr[j]
+			j--
+		}
+		arr[j + 1] = key
+	}
+}
+
+func InsertionSortNama(arr *[1000]Pinjaman,n int) {
+	for i := 1;i < n;i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j].Nama > key.Nama {
+			arr[j + 1] = arr[j]
+			j--
+		}
+		arr[j + 1] = key
+	}
+}
+
+//SELECTION
+func SelectionSortPinjaman(arr *[1000]Pinjaman,n int) {
+	for i := 1;i < n;i++ {
+		
+	}
+}
 func main() {
 	fmt.Println("Program Sistem Pinjaman")
 }
