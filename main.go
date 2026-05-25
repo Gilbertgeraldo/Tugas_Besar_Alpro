@@ -1,4 +1,5 @@
 package main
+
 import (
 	"fmt"
 	"math"
@@ -29,7 +30,7 @@ func ClearScreen() {
 }
 
 func garis1() {
-	fmt.Print("=================================================================================")
+	fmt.Println("=================================================================================")
 }
 
 func garis2() {
@@ -79,7 +80,7 @@ func allTable() {
 }
 
 func enter() {
-	fmt.Printf("\n Tekan enter untuk kembali ke ...")
+	fmt.Printf("\n Tekan enter untuk kembali ke Menu utama")
 	var d string
 	fmt.Scan(&d)
 }
@@ -139,7 +140,7 @@ func cetakAmortisasi(p Pinjaman) {
 func inputSkema() string {
 	fmt.Println("Skema Bunga : ")
 	fmt.Println("	1.FLAT		-Bunga kamu tetap nih dari pokok awal.")
-	fmt.Println("	2.VARIABEL	-Bunga anuitas,menurun tiap bulab")
+	fmt.Println("	2.VARIABEL	-Bunga anuitas,menurun tiap bulan")
 	fmt.Println("	Pilig(1/2)")
 	var s string
 	fmt.Scan(&s)
@@ -675,13 +676,49 @@ func Laporan() {
 	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
 	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
 
+	
 }
+
+func cetakJudul() {
+    judul := []string{
+        `________          __                                   ______   __                               `,
+        `/        |        /  |                                 /      \ /  |                              `,
+        `$$$$$$$$/__    __ $$ |____    ______    _______       /$$$$$$  |$$ |  ______    ______    ______  `,
+        `   $$ | /  |  /  |$$      \  /      \  /       |      $$ |__$$ |$$ | /      \  /      \  /      \`,
+        `   $$ | $$ |  $$ |$$$$$$$  |/$$$$$$  |/$$$$$$$/       $$    $$ |$$ |/$$$$$$  |/$$$$$$  |/$$$$$$  |`,
+        `   $$ | $$ |  $$ |$$ |  $$ |$$    $$ |$$      \       $$$$$$$$ |$$ |$$ |  $$ |$$ |  $$/ $$ |  $$ |`,
+        `   $$ | $$ \__$$ |$$ |__$$ |$$$$$$$$/  $$$$$$  |      $$ |  $$ |$$ |$$ |__$$ |$$ |      $$ \__$$ |`,
+        `   $$ | $$    $$/ $$    $$/ $$       |/     $$/       $$ |  $$ |$$ |$$    $$/ $$ |      $$    $$/  `,
+        `   $$/   $$$$$$/  $$$$$$$/   $$$$$$$/ $$$$$$$/        $$/   $$/ $$/ $$$$$$$/  $$/        $$$$$$/   `,
+        `                                                                    $$ |                            `,
+        `                                                                    $$ |                            `,
+        `                                                                    $$/                             `,
+    }
+
+    warna := []string{
+        "\033[31m", // Merah
+        "\033[33m", // Kuning
+        "\033[32m", // Hijau
+        "\033[36m", // Cyan
+        "\033[34m", // Biru
+        "\033[35m", // Ungu
+        "\033[91m", // Merah terang
+        "\033[92m", // Hijau terang
+        "\033[93m", // Kuning terang
+        "\033[94m", // Biru terang
+        "\033[95m", // Ungu terang
+        "\033[96m", // Cyan terang
+    }
+
+    for i, baris := range judul {
+        fmt.Println(warna[i%len(warna)] + baris + "\033[0m")
+    }
+}
+
 func main() {
 	for {
 		ClearScreen()
-		garis1()
-		fmt.Println(" SISTEM SIMULASI PINJAMAN & KREDIT SEDERHANA")
-		garis1()
+		cetakJudul()
 		garis2()
 		fmt.Println(" Anggota : ")
 		fmt.Println("1.Gilbert Geraldo(103052500054)")
