@@ -262,42 +262,7 @@ func ubahPeminjam() {
 		hitungDanSet(p)
 	case "5":
 		fmt.Print("	Status Pembayaran baru : ")
-		fmt.Println("Pilih status baru : ")
-		fmt.Println("	1.MENUNGGU")
-		fmt.Println("	2.AKTIF")
-		fmt.Println("	3.LUNAS")
-		fmt.Println("	4.MACET")
-		fmt.Println("Pilihan :")
-		var s string
-		fmt.Scan(&s)
-		switch s {
-		case "1":
-			p.Status = "MENUNGGU"
-		case "2":
-			p.Status = "AKTIF"
-		case "3":
-			p.Status = "LUNAS"
-		case "4":
-			p.Status = "MACET"
-		default:
-			enter()
-			return
-		}
-	case "6":
-		fmt.Printf("Kamu udah bayar berapa bulan nih : (max : %d)", p.Tenor)
-		fmt.Scan(&p.sudahBayar)
-		if p.sudahBayar < 0 || p.sudahBayar > p.Tenor {
-			fmt.Printf("Kamu gabisa input nilai yang negatif ya untuk tenor...")
-			enter()
-			return
-		}
-		if p.sudahBayar == p.Tenor {
-			p.Status = "LUNAS"
-		}
-	default:
-		fmt.Println("Pilihan yang kamu masukan tidak valid nih,masukan pilihan yang benar ya..")
-		enter()
-		return
+		fmt.Scan(&p)
 	}
 	fmt.Printf("\n Data peminjam \"%s\" Berhasil diubah!\n", p.Nama)
 	DetailPeminjaman(*p, idx)
@@ -343,30 +308,196 @@ func hapusPeminjam() {
 	fmt.Printf(" Peminjam \"%s\" berhasil dihapus!\n", nama)
 }
 
-//PENCARIAN : Sequential & Binary Searc
+func SequentialSearch() {
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		return
+	}
 
-func BinarySearchNama(arr *[1000]Pinjaman, target string) Pinjaman {
-	l := 0
-	r := countPeminjam - 1
+	var keyword string
+	fmt.Print(" Masukkan nama peminjam yang dicari : ")
+	fmt.Scan(&keyword)
 
-	for l <= r {
-		m := (r + l) / 2
-		if (*arr)[m].Nama == target {
-			return (*arr)[m]
+	keyLower := ""
+	for i := 0; i < len(keyword); i++ {
+		c := keyword[i]
+		if c >= 'A' && c <= 'Z' {
+			c = c + 32
+		}
+		keyLower += string(c)
+	}
+
+	found := false
+	fmt.Println()
+	garis1()
+	fmt.Println(" HASIL SEQUENTIAL SEARCH")
+	garis1()
+
+	for i := 0; i < countPeminjam; i++ {
+		namaLower := ""
+		for j := 0; j < len(dataPeminjam[i].Nama); j++ {
+			c := dataPeminjam[i].Nama[j]
+			if c >= 'A' && c <= 'Z' {
+				c = c + 32
+			}
+			namaLower += string(c)
 		}
 
-		if (*arr)[m].Nama < target {
-			l = m + 1
-		} else {
-			r = m - 1
+		match := false
+		if len(namaLower) == len(keyLower) {
+			match = true
+			for k := 0; k < len(namaLower); k++ {
+				if namaLower[k] != keyLower[k] {
+					match = false
+					break
+				}
+			}
+		}
+
+		if match {
+			DetailPeminjaman(dataPeminjam[i], i)
+			found = true
 		}
 	}
-	return Pinjaman{}
+
+	if !found {
+		fmt.Printf(" Peminjam dengan nama \"%s\" tidak ditemukan.\n", keyword)
+	}
 }
 
-//ALGORITMA SORTING :
+func BinarySearch() {
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		return
+	}
 
-//INSERTION
+	var temp [1000]Pinjaman
+	for i := 0; i < countPeminjam; i++ {
+		temp[i] = dataPeminjam[i]
+	}
+
+	for i := 1; i < countPeminjam; i++ {
+		key := temp[i]
+
+		keyNamaLower := ""
+		for x := 0; x < len(key.Nama); x++ {
+			c := key.Nama[x]
+			if c >= 'A' && c <= 'Z' {
+				c = c + 32
+			}
+			keyNamaLower += string(c)
+		}
+
+		j := i - 1
+		for j >= 0 {
+			namaJLower := ""
+			for x := 0; x < len(temp[j].Nama); x++ {
+				c := temp[j].Nama[x]
+				if c >= 'A' && c <= 'Z' {
+					c = c + 32
+				}
+				namaJLower += string(c)
+			}
+
+			isGreater := false
+			minLen := len(namaJLower)
+			if len(keyNamaLower) < minLen {
+				minLen = len(keyNamaLower)
+			}
+			for k := 0; k < minLen; k++ {
+				if namaJLower[k] > keyNamaLower[k] {
+					isGreater = true
+					break
+				} else if namaJLower[k] < keyNamaLower[k] {
+					break
+				}
+			}
+			if !isGreater && len(namaJLower) > len(keyNamaLower) {
+				isGreater = true
+			}
+
+			if isGreater {
+				temp[j+1] = temp[j]
+				j--
+			} else {
+				break
+			}
+		}
+		temp[j+1] = key
+	}
+
+	var keyword string
+	fmt.Print(" Masukkan nama peminjam yang dicari : ")
+	fmt.Scan(&keyword)
+
+	keyLower := ""
+	for i := 0; i < len(keyword); i++ {
+		c := keyword[i]
+		if c >= 'A' && c <= 'Z' {
+			c = c + 32
+		}
+		keyLower += string(c)
+	}
+
+	low := 0
+	high := countPeminjam - 1
+	result := -1
+
+	for low <= high {
+		mid := int(math.Floor(float64(low+high) / 2))
+
+		midNamaLower := ""
+		for x := 0; x < len(temp[mid].Nama); x++ {
+			c := temp[mid].Nama[x]
+			if c >= 'A' && c <= 'Z' {
+				c = c + 32
+			}
+			midNamaLower += string(c)
+		}
+
+		cmp := 0
+		minLen := len(midNamaLower)
+		if len(keyLower) < minLen {
+			minLen = len(keyLower)
+		}
+		for k := 0; k < minLen; k++ {
+			if midNamaLower[k] < keyLower[k] {
+				cmp = -1
+				break
+			} else if midNamaLower[k] > keyLower[k] {
+				cmp = 1
+				break
+			}
+		}
+		if cmp == 0 {
+			if len(midNamaLower) < len(keyLower) {
+				cmp = -1
+			} else if len(midNamaLower) > len(keyLower) {
+				cmp = 1
+			}
+		}
+
+		if cmp == 0 {
+			result = mid
+			break
+		} else if cmp < 0 {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+
+	fmt.Println()
+	garis1()
+	fmt.Println(" HASIL BINARY SEARCH")
+	garis1()
+
+	if result != -1 {
+		DetailPeminjaman(temp[result], result)
+	} else {
+		fmt.Printf(" Peminjam dengan nama \"%s\" tidak ditemukan.\n", keyword)
+	}
+}
 
 func InsertionSortPinjaman(arr *[1000]Pinjaman, n int) {
 	for i := 0; i < n; i++ {
