@@ -85,138 +85,7 @@ func enter() {
 	fmt.Scan(&d)
 }
 
-// UNTUK MENDAFTARKAN ADMIN DENGAN MAKSIMAL ADMIN ADALAH 3
-// func regisAdmin(data *[3]admin, i int) {
-// 	fmt.Println()
-// 	fmt.Printf("=%-10s Buat Akun =%-10s", " ", " ")
-// 	fmt.Print("Nama : ")
-// 	fmt.Scan(&data[i].Username)
-// 	fmt.Print("Password : ")
-// 	fmt.Scan(&data[i].Password)
-// 	fmt.Printf("=====================================")
-// 	fmt.Print("YEAYYY!DATA KAMU BERHASIL DIBUAT!!")
-// }
-
-// CEK APAKAH ADMIN ADA ?
-// func cekDataAdmin(usn string, pw string) bool {
-// 	for _,v := range dataAdmin {
-// 		if usn == v.Username && pw == v.Password {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func cekDataNasabah(usn string,pw string) bool {
-// 	for _,v := range dataPeminjam {
-// 		if usn == v.Nama && pw == v.Password {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func loginAdmin() bool {
-// 	var username, password string
-
-// 	fmt.Print("Username : ")
-// 	fmt.Scan(&username)
-// 	fmt.Print("Password : ")
-// 	fmt.Scan(&password)
-
-// 	for _, v := range dataAdmin {
-// 		if username == v.Username && password == v.Password {
-// 			fmt.Print("Password dan username anda benar!")
-// 			Admin(v.Username)
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func loginPeminjam() bool {
-// 	var usn,pwd string
-
-// 	fmt.Print("Username : ")
-// 	fmt.Scan(&usn)
-// 	fmt.Print("Password : ")
-// 	fmt.Scan(&pwd)
-
-// 	for _,v := range akunNasabah {
-// 		if v.username == usn && v.password == pwd {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func Register() {
-// 	ClearScreen()
-// 	var pilihan string
-// 	garis1()
-// 	fmt.Println("--------- DAFTAR AKUN BARU ---------")
-// 	fmt.Println("1.Daftar Sebagai admin")
-// 	fmt.Println("2.Register sebagai peminjam")
-// 	garis1()
-// 	fmt.Scan(&pilihan)
-
-// 	var usn string
-// 	fmt.Print("Harap masukan username anda : ")
-// 	fmt.Scan(&usn)
-
-// 	switch pilihan {
-// 	case "1":
-// 		found := false
-// 		for _, v := range dataAdmin {
-// 			if v.Username == usn {
-// 				found = true
-// 				break
-// 			}
-// 		}
-
-// 		if found {
-// 			fmt.Printf("\nUsername : %s sudah terdaftar!!", usn)
-// 			loginAdmin()
-// 		} else {
-// 			var pw string
-// 			fmt.Print("Harap masukan password anda : ")
-// 			fmt.Scan(&pw)
-// 			dataAdmin[counterAdmin] = admin{Username: usn, Password: pw}
-// 			counterAdmin++
-// 			fmt.Println("registrasi admin berhasil")
-// 		}
-
-// 	case "2":
-// 		found := false
-// 		for _, v := range dataPeminjam {
-// 			if v.Nama == usn {
-// 				found = true
-// 				break
-// 			}
-// 		}
-// 		if found {
-// 			fmt.Printf("\nUsername : %s sudah terdaftar!!", usn)
-// 			loginPeminjam()
-// 		} else {
-// 			nasabahBaru := Pinjaman{
-// 				Nama:   usn,
-// 				Status: "nggu",
-// 				Tenor: 0,
-// 				Bunga: 0,
-// 				sudahBayar: 0,
-// 				BayaranPerbulan: 0,
-// 				sisaPinjam: 0,
-// 				JumlahPinjaman: 0,
-// 			}
-// 			dataPeminjam[counterPeminjam] = nasabahBaru
-// 			counterPeminjam++
-// 			fmt.Println("Registrasi peminjaman berhasil")
-// 		}
-// 	}
-// }
-
 // INI RUMUS UNTUK KALKULASI BUNGA
-
 //Bunga variabel anuitas
 // C = p * r(1 + r)^n / ((1 + r)^n - 1)
 //didapat dari https://www.bfi.co.id/id/blog/bunga-anuitas
@@ -248,6 +117,17 @@ func bungaFlat(pokok, bunga float64, tenor int) (bayaran, totalBunga, totalBayar
 	return
 }
 
+func hitungDanSet(p *Pinjaman) {
+	var bayaran, totalBunga, totalBayar float64
+	if p.SchemaBunga == "FLAT" {
+		bayaran, totalBunga, totalBayar = bungaFlat(p.JumlahPinjaman, p.Bunga, p.Tenor)
+	} else {
+		bayaran, totalBunga, totalBayar = HitungAnuitas(p.JumlahPinjaman, p.Bunga, p.Tenor)
+	}
+	p.BayaranPerbulan = bayaran
+	p.TotalBunga = totalBunga
+	p.TotalBayar = totalBayar
+}
 func cetakAmortisasi(p Pinjaman) {
 	garis1()
 	fmt.Println("Tabel Amortisasi(Jadwal cicilan Anda)")
@@ -371,16 +251,22 @@ func ubahPeminjam() {
 	case "3":
 		fmt.Print("	Tenor baru (bulan): ")
 		fmt.Scan(&p.Tenor)
-		hitungDanSet()
+		hitungDanSet(p)
 	case "4":
 		p.SchemaBunga = inputSkema()
 		fmt.Print("	Bunga pertahun (%) baru : ")
 		fmt.Scan(&p.Bunga)
-		hitungDanSet()
+		if p.Bunga < 0 {
+			fmt.Println(" Bunga tidak boleh negatif.")
+		}
+		hitungDanSet(p)
 	case "5":
 		fmt.Print("	Status Pembayaran baru : ")
 		fmt.Scan(&p)
 	}
+	fmt.Printf("\n Data peminjam \"%s\" Berhasil diubah!\n", p.Nama)
+	DetailPeminjaman(*p, idx)
+	enter()
 }
 
 func hapusPeminjam() {
@@ -613,6 +499,204 @@ func BinarySearch() {
 	}
 }
 
+func InsertionSortPinjaman(arr *[1000]Pinjaman, n int) {
+	for i := 0; i < n; i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j].JumlahPinjaman > key.JumlahPinjaman {
+			arr[j+1] = arr[j]
+			j--
+		}
+		arr[j+1] = key
+	}
+}
+
+func InsertionSortTenor(arr *[1000]Pinjaman, n int) {
+	for i := 1; i < n; i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j].Tenor > key.Tenor {
+			arr[j+1] = arr[j]
+			j--
+		}
+		arr[j+1] = key
+	}
+}
+
+func InsertionSortNama(arr *[1000]Pinjaman, n int) {
+	for i := 1; i < n; i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j].Nama > key.Nama {
+			arr[j+1] = arr[j]
+			j--
+		}
+		arr[j+1] = key
+	}
+}
+
+// SELECTION
+func SelectionSortPinjaman(arr *[1000]Pinjaman, n int) {
+	for i := 1; i < n-1; i++ {
+		mIdx := i
+		for j := i + 1; j < n; j++ {
+			if arr[j].JumlahPinjaman < arr[mIdx].JumlahPinjaman {
+				mIdx = j
+			}
+		}
+		arr[i], arr[mIdx] = arr[mIdx], arr[i]
+	}
+}
+
+func SelectionSortTenor(arr *[1000]Pinjaman, n int) {
+	for i := 1; i < n-1; i++ {
+		minIdx := i
+		for j := i + 1; j < n; j++ {
+			if arr[j].Tenor < arr[minIdx].Tenor {
+				minIdx = j
+			}
+		}
+		arr[i], arr[minIdx] = arr[minIdx], arr[i]
+	}
+}
+
+func MenuSorting() {
+	ClearScreen()
+	garis1()
+	fmt.Print(" URUTKAN DATA PEMINJAM")
+	garis1()
+
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		enter()
+		return
+	}
+
+	fmt.Println(" Urutkan berdasarkan : ")
+	fmt.Println("	1.Jumlah Pinjaman(Selection Sort)")
+	fmt.Println("	2.Tenor (Selection Sort)")
+	fmt.Println("	3.Jumlah Pinjaman(Insertion Sort)")
+	fmt.Println("	4.Tenor (Selection Sort)")
+
+	var pil string
+	fmt.Scan(&pil)
+
+	switch pil {
+	case "1":
+		SelectionSortPinjaman(&dataPeminjam, countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Jumlah Pinjaaman (Selection Sort)")
+	case "2":
+		SelectionSortTenor(&dataPeminjam, countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Tenor (Selection Sort)")
+	case "3":
+		InsertionSortPinjaman(&dataPeminjam, countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Jumlah Pinjaman(Insertion Sort)")
+	case "4":
+		InsertionSortTenor(&dataPeminjam, countPeminjam)
+		fmt.Println("Data diurutkan berdasarkan Tenor (Insertion Sort)")
+	default:
+		fmt.Println("Error!!,Pilihan tidak valid.")
+		enter()
+		return
+	}
+	allTable()
+	enter()
+}
+
+func Laporan() {
+	ClearScreen()
+	garis1()
+	fmt.Println(" LAPORAN SISTEM PEMINJAMAN")
+	garis1()
+
+	if countPeminjam == 0 {
+		fmt.Println("Belum ada data peminjam")
+		enter()
+		return
+	}
+	var totalPokok, totalBayar, totalBunga float64
+	var cMen, CAk, cLun, CMcet int
+
+	for i := 0; i < countPeminjam; i++ {
+		p := dataPeminjam[i]
+		totalPokok += p.JumlahPinjaman
+		totalBayar += p.TotalBayar
+		totalBunga += p.TotalBunga
+
+		switch p.Status {
+		case "MENUNGGU":
+			cMen++
+		case "AKTIF":
+			CAk++
+		case "LUNAS":
+			cLun++
+		case "MACET":
+			CMcet++
+		}
+	}
+	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
+	fmt.Printf("	Total pokok pinjaman		: Rp %.2f\n", totalPokok)
+	fmt.Printf("	Total Bunga					: Rp %.2f\n", totalBunga)
+	fmt.Printf("	Total Nilai Bayar			: Rp %.2f\n", totalBayar)
+	garis2()
+	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
+	fmt.Printf("	Total peminjam				: %d orang\n", countPeminjam)
+
+}
 func main() {
-	fmt.Println("Program Sistem Pinjaman")
+	for {
+		ClearScreen()
+		garis1()
+		fmt.Println(" SISTEM SIMULASI PINJAMAN & KREDIT SEDERHANA")
+		garis1()
+		garis2()
+		fmt.Println(" Anggota : ")
+		fmt.Println("1.Gilbert Geraldo(103052500054)")
+		fmt.Println("2.Jafar Shiddiq(103052500)")
+		garis2()
+		fmt.Println("	1.Tambah Peminjam")
+		fmt.Println("	2.Ubah Data Peminjam")
+		fmt.Println("	3.Hapus Peminjam")
+		fmt.Println("	4.Lihat Semua pinjaman")
+		fmt.Println("	5.Cari Peminjam")
+		fmt.Println("	6.Urutkan Peminjaman")
+		fmt.Println("	7.Laporan")
+		fmt.Println("	0.Keluar")
+		garis1()
+		fmt.Print("Silahkan masukan pilihan anda : ")
+		var p string
+		fmt.Scan(&p)
+
+		switch pil {
+		case "1":
+			tambahPeminjam()
+		case "2":
+			ubahPeminjam()
+		case "3":
+			hapusPeminjam()
+		case "4":
+			ClearScreen()
+			garis1()
+			fmt.Println("	DAFTAR SEMUA PEMINJAM")
+			garis1()
+			allTable()
+			enter()
+		case "5":
+			
+		case "6":
+			MenuSorting()
+		case "7":
+			Laporan()
+		case "0":
+			fmt.Println("Terimakasih...Sampai Jumpa")
+			return
+		default:
+			fmt.Println("Pilihan anda tidak valid")
+			enter()
+		}
+
+	}
 }
