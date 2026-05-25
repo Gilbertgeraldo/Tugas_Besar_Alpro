@@ -560,6 +560,7 @@ func SelectionSortTenor(arr *[1000]Pinjaman, n int) {
 	}
 }
 
+
 func MenuSorting() {
 	ClearScreen()
 	garis1()
@@ -670,7 +671,7 @@ func main() {
 		var p string
 		fmt.Scan(&p)
 
-		switch pil {
+		switch p {
 		case "1":
 			tambahPeminjam()
 		case "2":
