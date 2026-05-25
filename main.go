@@ -6,25 +6,25 @@ import (
 )
 
 type Pinjaman struct {
-	Nama string
-	JumlahPinjaman float64
-	Tenor int
-	Status string
-	Bunga float64
+	Nama            string
+	JumlahPinjaman  float64
+	Tenor           int
+	Status          string
+	Bunga           float64
 	BayaranPerbulan float64
-	sisaPinjam int
-	sudahBayar int
-	SchemaBunga string
-	TotalBunga float64
-	TotalBayar float64
-	SudahBayar  int
+	sisaPinjam      int
+	sudahBayar      int
+	SchemaBunga     string
+	TotalBunga      float64
+	TotalBayar      float64
+	SudahBayar      int
 }
 
 var dataPeminjam [1000]Pinjaman
 var countPeminjam int = 0
 
 func ClearScreen() {
-	//Untuk membersihkan terminal 
+	//Untuk membersihkan terminal
 	//didapat dari https://stackoverflow.com/questions/22891644/how-can-i-clear-the-terminal-screen-in-go/22892171#22892171
 	fmt.Print("\033[H\033[2J")
 }
@@ -37,7 +37,7 @@ func garis2() {
 	fmt.Println("-------------------------------------------------------------------------------")
 }
 
-func DetailPeminjaman(p Pinjaman,idx int) {
+func DetailPeminjaman(p Pinjaman, idx int) {
 	garis2()
 	fmt.Printf("  No.             : %d\n", idx+1)
 	fmt.Printf("  Nama            : %s\n", p.Nama)
@@ -56,27 +56,27 @@ func DetailPeminjaman(p Pinjaman,idx int) {
 func TabelHeader() {
 	garis1()
 	fmt.Printf("| %-3s | %-15s | %-14s | %-5s | %-8s | %-9s | %-12s |\n",
-		"NO","Nama","Pinjaman (Rp)","Tenor","Skema","Status","Bayaran/Bulan")
+		"NO", "Nama", "Pinjaman (Rp)", "Tenor", "Skema", "Status", "Bayaran/Bulan")
 	garis1()
 }
 
-func TabelBaris(p Pinjaman,idx int) {
+func TabelBaris(p Pinjaman, idx int) {
 	fmt.Printf("| %-3d | %-15s | %14.0f | %5d | %-8s | %-9s | %12.0f |\n",
-	idx + 1,p.Nama,p.JumlahPinjaman,p.Tenor,p.SchemaBunga,p.Status,p.BayaranPerbulan)
+		idx+1, p.Nama, p.JumlahPinjaman, p.Tenor, p.SchemaBunga, p.Status, p.BayaranPerbulan)
 }
 
-func allTable() { 
+func allTable() {
 	if countPeminjam == 0 {
 		fmt.Println("Belum ada data peminjam!")
 		return
 	}
 
 	TabelHeader()
-	for i := 0; i < countPeminjam;i++ {
-		TabelBaris(dataPeminjam[i],i)	
+	for i := 0; i < countPeminjam; i++ {
+		TabelBaris(dataPeminjam[i], i)
 	}
 	garis1()
-	fmt.Printf("	Total : %d peminjam\n",countPeminjam)
+	fmt.Printf("	Total : %d peminjam\n", countPeminjam)
 }
 
 func enter() {
@@ -85,12 +85,11 @@ func enter() {
 	fmt.Scan(&d)
 }
 
-
 // UNTUK MENDAFTARKAN ADMIN DENGAN MAKSIMAL ADMIN ADALAH 3
 // func regisAdmin(data *[3]admin, i int) {
 // 	fmt.Println()
 // 	fmt.Printf("=%-10s Buat Akun =%-10s", " ", " ")
-// 	fmt.Print("Nama : ")	
+// 	fmt.Print("Nama : ")
 // 	fmt.Scan(&data[i].Username)
 // 	fmt.Print("Password : ")
 // 	fmt.Scan(&data[i].Password)
@@ -98,7 +97,7 @@ func enter() {
 // 	fmt.Print("YEAYYY!DATA KAMU BERHASIL DIBUAT!!")
 // }
 
-// CEK APAKAH ADMIN ADA ? 
+// CEK APAKAH ADMIN ADA ?
 // func cekDataAdmin(usn string, pw string) bool {
 // 	for _,v := range dataAdmin {
 // 		if usn == v.Username && pw == v.Password {
@@ -222,16 +221,16 @@ func enter() {
 // C = p * r(1 + r)^n / ((1 + r)^n - 1)
 //didapat dari https://www.bfi.co.id/id/blog/bunga-anuitas
 
-func HitungAnuitas(pokok,bunga float64,tenor int) (bayaran,totalBunga,totalBayar float64) {
+func HitungAnuitas(pokok, bunga float64, tenor int) (bayaran, totalBunga, totalBayar float64) {
 	r := (bunga / 100.0) / 12.0
 	if r == 0 {
-		bayaran = math.Round((pokok/float64(tenor)) * 100) / 100
+		bayaran = math.Round((pokok/float64(tenor))*100) / 100
 		return
 	}
-	rn := math.Pow(1 + r, float64(tenor))
-	bayaran = math.Round(pokok * (r * rn/(rn-1))*100)/100
+	rn := math.Pow(1+r, float64(tenor))
+	bayaran = math.Round(pokok*(r*rn/(rn-1))*100) / 100
 	totalBayar = math.Round(bayaran*float64(tenor)*100) / 100
-	totalBunga = math.Round((totalBayar - pokok)*100) / 100
+	totalBunga = math.Round((totalBayar-pokok)*100) / 100
 	return
 }
 
@@ -241,10 +240,10 @@ func HitungAnuitas(pokok,bunga float64,tenor int) (bayaran,totalBunga,totalBayar
 //Bayaranperbulan = (pokok + totalBunga) / tenor
 //didapat dari : https://www.bfi.co.id/id/blog/bunga-flat-adalah-pengertian-kelebihan-dan-cara-menghitungnya
 
-func bungaFlat(pokok,bunga float64,tenor int) (bayaran,totalBunga,totalBayar float64) {
+func bungaFlat(pokok, bunga float64, tenor int) (bayaran, totalBunga, totalBayar float64) {
 	r := (bunga / 100.0) / 12.0
 	totalBunga = math.Round(pokok*r*float64(tenor)*100) / 100
-	totalBayar = math.Round((pokok + totalBunga)*100) / 100
+	totalBayar = math.Round((pokok+totalBunga)*100) / 100
 	bayaran = math.Round((totalBayar/float64(tenor))*100) / 100
 	return
 }
@@ -270,20 +269,21 @@ func inputSkema() string {
 	}
 	return "VARIABEL"
 }
-//CRUD data peminjam(Create,Read,Update,delete)
+
+// CRUD data peminjam(Create,Read,Update,delete)
 func tambahPeminjam() {
 	ClearScreen()
 	garis1()
 	fmt.Println(" Tambah data peminjam")
 	garis1()
 
-	if  countPeminjam > 1000 {
+	if countPeminjam > 1000 {
 		fmt.Println("Data penuh!!, maksimal 1000 peminjam.")
 		return
 	}
 
 	var p Pinjaman
-	
+
 	fmt.Print(" Nama peminjam			:")
 	fmt.Scan(&p.Nama)
 	fmt.Print("	Jumlah pinjaman			:")
@@ -308,7 +308,7 @@ func tambahPeminjam() {
 	countPeminjam++
 
 	fmt.Println("\n ===HASIL KALKULASI===")
-	DetailPeminjaman(p,countPeminjam - 1)
+	DetailPeminjaman(p, countPeminjam-1)
 
 	var pil string
 	fmt.Print("	Apakah anda ingin menampilkan tabel amortisasi anda? (Y/N): ")
@@ -318,7 +318,7 @@ func tambahPeminjam() {
 		cetakAmortisasi(p)
 	}
 
-	fmt.Printf("\n Peminjaman \"%s\" berhasil ditambahkan!\n",p.Nama)
+	fmt.Printf("\n Peminjaman \"%s\" berhasil ditambahkan!\n", p.Nama)
 }
 
 func ubahPeminjam() {
@@ -346,7 +346,7 @@ func ubahPeminjam() {
 	p := &dataPeminjam[idx]
 
 	fmt.Printf("\n Data saat ini:\n")
-	DetailPeminjaman(*p,idx)
+	DetailPeminjaman(*p, idx)
 
 	fmt.Println("\n Yang ingin diubah :")
 	fmt.Println("	1.Nama")
@@ -379,7 +379,7 @@ func ubahPeminjam() {
 		hitungDanSet()
 	case "5":
 		fmt.Print("	Status Pembayaran baru : ")
-		fmt.Scan(&p )
+		fmt.Scan(&p)
 	}
 }
 
@@ -403,10 +403,10 @@ func hapusPeminjam() {
 		fmt.Println("Nomor tidak valid!")
 		return
 	}
-	idx := no -1
+	idx := no - 1
 	nama := dataPeminjam[idx].Nama
 
-	fmt.Printf( " Apakah anda yakin untuk menghapus \"%s\"? : ",nama)
+	fmt.Printf(" Apakah anda yakin untuk menghapus \"%s\"? : ", nama)
 	var konfirmasi string
 	fmt.Scan(&konfirmasi)
 
@@ -415,14 +415,203 @@ func hapusPeminjam() {
 		return
 	}
 
-	for i := idx; i < countPeminjam - 1;i++ {
-		dataPeminjam[i] = dataPeminjam[i + 1]
+	for i := idx; i < countPeminjam-1; i++ {
+		dataPeminjam[i] = dataPeminjam[i+1]
 	}
 	countPeminjam--
-	fmt.Printf(" Peminjam \"%s\" berhasil dihapus!\n",nama)
+	fmt.Printf(" Peminjam \"%s\" berhasil dihapus!\n", nama)
 }
 
+func SequentialSearch() {
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		return
+	}
 
+	var keyword string
+	fmt.Print(" Masukkan nama peminjam yang dicari : ")
+	fmt.Scan(&keyword)
+
+	keyLower := ""
+	for i := 0; i < len(keyword); i++ {
+		c := keyword[i]
+		if c >= 'A' && c <= 'Z' {
+			c = c + 32
+		}
+		keyLower += string(c)
+	}
+
+	found := false
+	fmt.Println()
+	garis1()
+	fmt.Println(" HASIL SEQUENTIAL SEARCH")
+	garis1()
+
+	for i := 0; i < countPeminjam; i++ {
+		namaLower := ""
+		for j := 0; j < len(dataPeminjam[i].Nama); j++ {
+			c := dataPeminjam[i].Nama[j]
+			if c >= 'A' && c <= 'Z' {
+				c = c + 32
+			}
+			namaLower += string(c)
+		}
+
+		match := false
+		if len(namaLower) == len(keyLower) {
+			match = true
+			for k := 0; k < len(namaLower); k++ {
+				if namaLower[k] != keyLower[k] {
+					match = false
+					break
+				}
+			}
+		}
+
+		if match {
+			DetailPeminjaman(dataPeminjam[i], i)
+			found = true
+		}
+	}
+
+	if !found {
+		fmt.Printf(" Peminjam dengan nama \"%s\" tidak ditemukan.\n", keyword)
+	}
+}
+
+func BinarySearch() {
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		return
+	}
+
+	var temp [1000]Pinjaman
+	for i := 0; i < countPeminjam; i++ {
+		temp[i] = dataPeminjam[i]
+	}
+
+	for i := 1; i < countPeminjam; i++ {
+		key := temp[i]
+
+		keyNamaLower := ""
+		for x := 0; x < len(key.Nama); x++ {
+			c := key.Nama[x]
+			if c >= 'A' && c <= 'Z' {
+				c = c + 32
+			}
+			keyNamaLower += string(c)
+		}
+
+		j := i - 1
+		for j >= 0 {
+			namaJLower := ""
+			for x := 0; x < len(temp[j].Nama); x++ {
+				c := temp[j].Nama[x]
+				if c >= 'A' && c <= 'Z' {
+					c = c + 32
+				}
+				namaJLower += string(c)
+			}
+
+			isGreater := false
+			minLen := len(namaJLower)
+			if len(keyNamaLower) < minLen {
+				minLen = len(keyNamaLower)
+			}
+			for k := 0; k < minLen; k++ {
+				if namaJLower[k] > keyNamaLower[k] {
+					isGreater = true
+					break
+				} else if namaJLower[k] < keyNamaLower[k] {
+					break
+				}
+			}
+			if !isGreater && len(namaJLower) > len(keyNamaLower) {
+				isGreater = true
+			}
+
+			if isGreater {
+				temp[j+1] = temp[j]
+				j--
+			} else {
+				break
+			}
+		}
+		temp[j+1] = key
+	}
+
+	var keyword string
+	fmt.Print(" Masukkan nama peminjam yang dicari : ")
+	fmt.Scan(&keyword)
+
+	keyLower := ""
+	for i := 0; i < len(keyword); i++ {
+		c := keyword[i]
+		if c >= 'A' && c <= 'Z' {
+			c = c + 32
+		}
+		keyLower += string(c)
+	}
+
+	low := 0
+	high := countPeminjam - 1
+	result := -1
+
+	for low <= high {
+		mid := int(math.Floor(float64(low+high) / 2))
+
+		midNamaLower := ""
+		for x := 0; x < len(temp[mid].Nama); x++ {
+			c := temp[mid].Nama[x]
+			if c >= 'A' && c <= 'Z' {
+				c = c + 32
+			}
+			midNamaLower += string(c)
+		}
+
+		cmp := 0
+		minLen := len(midNamaLower)
+		if len(keyLower) < minLen {
+			minLen = len(keyLower)
+		}
+		for k := 0; k < minLen; k++ {
+			if midNamaLower[k] < keyLower[k] {
+				cmp = -1
+				break
+			} else if midNamaLower[k] > keyLower[k] {
+				cmp = 1
+				break
+			}
+		}
+		if cmp == 0 {
+			if len(midNamaLower) < len(keyLower) {
+				cmp = -1
+			} else if len(midNamaLower) > len(keyLower) {
+				cmp = 1
+			}
+		}
+
+		if cmp == 0 {
+			result = mid
+			break
+		} else if cmp < 0 {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+
+	fmt.Println()
+	garis1()
+	fmt.Println(" HASIL BINARY SEARCH")
+	garis1()
+
+	if result != -1 {
+		DetailPeminjaman(temp[result], result)
+	} else {
+		fmt.Printf(" Peminjam dengan nama \"%s\" tidak ditemukan.\n", keyword)
+	}
+}
 
 func main() {
 	fmt.Println("Program Sistem Pinjaman")
