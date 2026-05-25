@@ -560,6 +560,36 @@ func SelectionSortTenor(arr *[1000]Pinjaman, n int) {
 	}
 }
 
+func MenuSearching() {
+	ClearScreen()
+	garis1()
+	fmt.Println(" CARI DATA PEMINJAM")
+	garis1()
+
+	if countPeminjam == 0 {
+		fmt.Println(" Belum ada data peminjam!")
+		enter()
+		return
+	}
+
+	fmt.Println(" Pilih metode pencarian : ")
+	fmt.Println("	1. Sequential Search")
+	fmt.Println("	2. Binary Search")
+	fmt.Print(" Pilihan : ")
+
+	var pil string
+	fmt.Scan(&pil)
+
+	switch pil {
+	case "1":
+		SequentialSearch()
+	case "2":
+		BinarySearch()
+	default:
+		fmt.Println("Error!!, Pilihan tidak valid.")
+	}
+	enter()
+}
 
 func MenuSorting() {
 	ClearScreen()
@@ -596,7 +626,7 @@ func MenuSorting() {
 		InsertionSortTenor(&dataPeminjam, countPeminjam)
 		fmt.Println("Data diurutkan berdasarkan Tenor (Insertion Sort)")
 	default:
-		fmt.Println("Error!!,Pilihan tidak valid.")
+		fmt.Println("Error!!, Pilihan tidak valid.")
 		enter()
 		return
 	}
@@ -671,7 +701,7 @@ func main() {
 		var p string
 		fmt.Scan(&p)
 
-		switch p {
+		switch pil {
 		case "1":
 			tambahPeminjam()
 		case "2":
@@ -686,7 +716,7 @@ func main() {
 			allTable()
 			enter()
 		case "5":
-			
+			MenuSearching()
 		case "6":
 			MenuSorting()
 		case "7":
