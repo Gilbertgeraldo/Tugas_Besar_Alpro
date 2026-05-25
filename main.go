@@ -722,7 +722,7 @@ func main() {
 		garis2()
 		fmt.Println(" Anggota : ")
 		fmt.Println("1.Gilbert Geraldo(103052500054)")
-		fmt.Println("2.Jafar Shiddiq(103052500)")
+		fmt.Println("2.Jafar Shiddiq(103052500002)")
 		garis2()
 		fmt.Println("	1.Tambah Peminjam")
 		fmt.Println("	2.Ubah Data Peminjam")
