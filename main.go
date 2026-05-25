@@ -78,9 +78,9 @@ func allTable() {
 }
 
 func enter() {
-	fmt.Printf("\n Tekan enter untuk kembali ke Menu utama")
-	var d string
-	fmt.Scan(&d)
+	fmt.Println("\nTekan ENTER untuk kembali ke Menu Utama...")
+	fmt.Scanln()
+	fmt.Scanln()
 }
 
 // INI RUMUS UNTUK KALKULASI BUNGA
