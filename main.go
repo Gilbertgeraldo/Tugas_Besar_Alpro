@@ -539,7 +539,7 @@ func main() {
 		var p string
 		fmt.Scan(&p)
 
-		switch pil {
+		switch p {
 		case "1":
 			tambahPeminjam()
 		case "2":
