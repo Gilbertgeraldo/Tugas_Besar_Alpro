@@ -127,12 +127,41 @@ func hitungDanSet(p *Pinjaman) {
 	p.TotalBayar = totalBayar
 }
 
+// Rumus Tabel Amortisasi
+// - Angsuran Bunga = Sisa Pokok × Suku Bunga Bulanan
+// - Angsuran Pokok = Total Angsuran - Angsuran Bunga  
+// - Sisa Pokok     = Sisa Pokok Bulan Lalu - Angsuran Pokok
+// didapat dari: https://kledo.com/blog/rumus-kalkulator-amortisasi/
 func cetakAmortisasi(p Pinjaman) {
 	garis1()
-	fmt.Println("  Tabel Amortisasi (Jadwal cicilan Anda)")
+	fmt.Println("  Tabel Amortisasi (Jadwal Cicilan Anda)")
 	garis1()
 	fmt.Printf("  %-5s | %-14s | %-14s | %-14s | %-14s\n",
 		"Bulan", "Bayaran (Rp)", "Pokok (Rp)", "Bunga (Rp)", "Sisa Pokok (Rp)")
+	garis1()
+
+	sisaPokok := p.JumlahPinjaman
+	r := (p.Bunga / 100.0) / 12.0
+
+	for bulan := 1; bulan <= p.Tenor; bulan++ {
+		var bungaBulan, pokokBulan float64
+
+		if p.SchemaBunga == "FLAT" {
+			bungaBulan = math.Round(p.JumlahPinjaman*r*100) / 100
+			pokokBulan = math.Round((p.BayaranPerbulan-bungaBulan)*100) / 100
+		} else {
+			bungaBulan = math.Round(sisaPokok*r*100) / 100
+			pokokBulan = math.Round((p.BayaranPerbulan-bungaBulan)*100) / 100
+		}
+
+		sisaPokok = math.Round((sisaPokok-pokokBulan)*100) / 100
+		if bulan == p.Tenor {
+			sisaPokok = 0
+		}
+
+		fmt.Printf("  %-5d | %14.2f | %14.2f | %14.2f | %14.2f\n",
+			bulan, p.BayaranPerbulan, pokokBulan, bungaBulan, sisaPokok)
+	}
 	garis1()
 }
 
@@ -261,14 +290,32 @@ func ubahPeminjam() {
 		}
 		hitungDanSet(p)
 	case "5":
-		fmt.Print("  Status Pembayaran baru : ")
-		fmt.Scan(&p)
-	}
+    fmt.Println("  Pilih status :")
+    fmt.Println("    1. MENUNGGU")
+    fmt.Println("    2. AKTIF")
+    fmt.Println("    3. LUNAS")
+    fmt.Println("    4. MACET")
+    fmt.Print("  Pilihan : ")
+    var sp string
+    fmt.Scan(&sp)
+    switch sp {
+    case "1":
+        p.Status = "MENUNGGU"
+    case "2":
+        p.Status = "AKTIF"
+    case "3":
+        p.Status = "LUNAS"
+    case "4":
+        p.Status = "MACET"
+    default:
+        fmt.Println("  Pilihan tidak valid.")
+    }
 
 	fmt.Printf("\n  Data peminjam \"%s\" berhasil diubah!\n", p.Nama)
 	DetailPeminjaman(*p, idx)
 	enter()
-}
+	}
+}	
 
 func hapusPeminjam() {
 	ClearScreen()
